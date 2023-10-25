@@ -3,6 +3,10 @@ pip install video-diffusion-pytorch
 
 # COMMAND ----------
 
+!pip install sacremoses
+
+# COMMAND ----------
+
 import torch
 from video_diffusion_pytorch import Unet3D, GaussianDiffusion
 
@@ -58,6 +62,10 @@ sampled_videos.shape # (2, 3, 5, 32, 32)
 
 # COMMAND ----------
 
+
+
+# COMMAND ----------
+
 import torch
 from video_diffusion_pytorch import Unet3D, GaussianDiffusion
 
@@ -77,11 +85,9 @@ diffusion = GaussianDiffusion(
 
 videos = torch.randn(3, 3, 5, 32, 32) # video (batch, channels, frames, height, width)
 
-text = [
-    'a whale breaching from afar',
+text = [    'a whale breaching from afar',
     'young girl blowing out candles on her birthday cake',
-    'fireworks with blue and green sparkles'
-]
+    'fireworks with blue and green sparkles']
 
 loss = diffusion(videos, cond = text)
 loss.backward()
@@ -89,6 +95,10 @@ loss.backward()
 
 sampled_videos = diffusion.sample(cond = text, cond_scale = 2)
 sampled_videos.shape # (3, 3, 5, 32, 32)
+
+# COMMAND ----------
+
+pwd
 
 # COMMAND ----------
 
@@ -106,7 +116,7 @@ diffusion = GaussianDiffusion(
     num_frames = 10,
     timesteps = 1000,   # number of steps
     loss_type = 'l1'    # L1 or L2
-).cuda()
+)
 
 trainer = Trainer(
     diffusion,
