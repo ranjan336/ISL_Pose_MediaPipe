@@ -62,7 +62,15 @@ sampled_videos.shape # (2, 3, 5, 32, 32)
 
 # COMMAND ----------
 
+!pip install huggingface_hub
 
+# COMMAND ----------
+
+!pip install safetensors
+
+# COMMAND ----------
+
+!pip install tokenizers sentencepiece
 
 # COMMAND ----------
 
@@ -85,9 +93,7 @@ diffusion = GaussianDiffusion(
 
 videos = torch.randn(3, 3, 5, 32, 32) # video (batch, channels, frames, height, width)
 
-text = [    'a whale breaching from afar',
-    'young girl blowing out candles on her birthday cake',
-    'fireworks with blue and green sparkles']
+text = ['a whale breaching from afar']
 
 loss = diffusion(videos, cond = text)
 loss.backward()
@@ -99,6 +105,10 @@ sampled_videos.shape # (3, 3, 5, 32, 32)
 # COMMAND ----------
 
 pwd
+
+# COMMAND ----------
+
+dbutils.fs.ls('/databricks/driver')
 
 # COMMAND ----------
 
@@ -120,7 +130,7 @@ diffusion = GaussianDiffusion(
 
 trainer = Trainer(
     diffusion,
-    './data',                         # this folder path needs to contain all your training data, as .gif files, of correct image size and number of frames
+    '/Users/ranjan.patra@lingarogroup.com/data',                         # this folder path needs to contain all your training data, as .gif files, of correct image size and number of frames
     train_batch_size = 32,
     train_lr = 1e-4,
     save_and_sample_every = 1000,
@@ -131,3 +141,4 @@ trainer = Trainer(
 )
 
 trainer.train()
+#The `.cuda()` function is removed from the code to switch to CPU mode.
