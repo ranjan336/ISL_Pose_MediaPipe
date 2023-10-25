@@ -1,41 +1,44 @@
 # Databricks notebook source
-pip install diffusers
+from diffusers import DiffusionPipeline
+
+repo_id = "runwayml/stable-diffusion-v1-5"
+pipe = DiffusionPipeline.from_pretrained(repo_id, use_safetensors=True)
 
 # COMMAND ----------
 
-pip install --upgrade transformers 
+from diffusers import StableDiffusionPipeline
+
+repo_id = "runwayml/stable-diffusion-v1-5"
+pipe = StableDiffusionPipeline.from_pretrained(repo_id, use_safetensors=True)
 
 # COMMAND ----------
 
-pip install accelerate
+from diffusers import StableDiffusionImg2ImgPipeline
+
+repo_id = "runwayml/stable-diffusion-v1-5"
+pipe = StableDiffusionImg2ImgPipeline.from_pretrained(repo_id)
 
 # COMMAND ----------
 
-!pip install torch==1.9.0+cu111 torchvision==0.10.0+cu111 -f https://download.pytorch.org/whl/cu111/torch_stable.html
+torch.cuda.is_available()
 
 # COMMAND ----------
 
-!pip install torch torchvision --upgrade
+from diffusers import AutoPipelineForImage2Image
+from diffusers.utils import load_image
 
-# COMMAND ----------
-
-import torch
-import requests
-from PIL import Image
-
-from diffusers import StableDiffusionDepth2ImgPipeline
-
-pipe = StableDiffusionDepth2ImgPipeline.from_pretrained(
-    "stabilityai/stable-diffusion-2-depth",
-    torch_dtype=torch.float16,
-    use_safetensors=True,
+pipeline = AutoPipelineForImage2Image.from_pretrained(
+    "kandinsky-community/kandinsky-2-2-decoder", torch_dtype=torch.float16, variant="fp16", use_safetensors=True
 ).to("cuda")
+pipeline.enable_model_cpu_offload()
+pipeline.enable_xformers_memory_efficient_attention()
 
 # COMMAND ----------
 
-url = "http://images.cocodataset.org/val2017/000000039769.jpg"
-init_image = Image.open(requests.get(url, stream=True).raw)
-prompt = "two tigers"
-n_prompt = "bad, deformed, ugly, bad anatomy"
-image = pipe(prompt=prompt, image=init_image, negative_prompt=n_prompt, strength=0.7).images[0]
+init_image = load_image("https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/diffusers/cat.png")
+
+# COMMAND ----------
+
+prompt = "cat wizard, gandalf, lord of the rings, detailed, fantasy, cute, adorable, Pixar, Disney, 8k"
+image = pipeline(prompt, image=init_image).images[0]
 image
